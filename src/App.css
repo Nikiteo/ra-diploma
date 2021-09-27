@@ -447,6 +447,10 @@ section {
   color: #fff;
 }
 
+.catalog-item-size:hover {
+  cursor: pointer;
+}
+
 .catalog-search-form {
   display: block;
   width: 100%;
