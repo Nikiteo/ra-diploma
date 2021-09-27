@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {
-  CART_ADD_PRODUCTS,
   CART_LENGTH,
   CART_PRODUCTS,
   CART_SUM,
@@ -208,7 +207,7 @@ export const cartProducts = (localStorageProducts) => async dispatch => {
   dispatch({
     type: CART_PRODUCTS,
     payload: localStorageProducts,
-  })
+  });
 }
 
 export const cartLength = (length) => async dispatch => {
@@ -232,64 +231,32 @@ export const cartSum = (cart) => async dispatch => {
   });
 }
 
-export const cartAddProducts = (cart, object) => async dispatch => {
-  // if (cart.length) {
-  //   const filterCart = cart.filter((item) => item.id !== object.id);
-  //   const indexCart = cart.findIndex((item) => item.id === object.id);
-  //   if (indexCart !== -1) {
-  //     let newCart = [...cart];
-  //     newCart[indexCart] = {
-  //       ...newCart[indexCart],
-  //       quanities: Number(newCart[indexCart].quanities) + Number(object.quanities)
-  //     };
-  //     dispatch({
-  //       type: CART_ADD_PRODUCTS,
-  //       payload: [...filterCart, ...newCart],
-  //     });
-  //     localStorage.setItem("cart", JSON.stringify([...filterCart, ...newCart]));
-  //   }
-  // } else {
-  //   dispatch({
-  //     type: CART_ADD_PRODUCTS,
-  //     payload: object,
-  //   });
-  //   localStorage.setItem("cart", JSON.stringify(object));
-  // }
-
-  let productList = cart;
-  console.log(productList);
-  if (productList.length) {
-    const indexProducts = productList.findIndex((item) => item.id === object.id && item.size === object.size);
-    console.log(indexProducts);
-    if (indexProducts !== -1) {
-      productList = productList.map((product) => {
-        if (product.id === object.id) {
-          return {
-            ...product,
-            quanities: Number(product.quanities) + Number(object.quanities),
-          };
-        } else {
-          return {
-            ...product
-          };
-        }
+export const cartAddProducts = (cart, object, updateCart) => async dispatch => {
+  if (cart.length) {
+    const indexCart = cart.findIndex((item) => item.id === object.id);
+    if (indexCart !== -1) {
+      let newCart = [...cart];
+      newCart[indexCart] = {
+        ...newCart[indexCart],
+        quanities: Number(newCart[indexCart].quanities) + Number(object.quanities)
+      };
+      dispatch({
+        type: CART_PRODUCTS,
+        payload: newCart,
       });
-      console.log(productList);
+      localStorage.setItem("cart", JSON.stringify(newCart));
     } else {
-      productList.push(object);
+      dispatch({
+        type: CART_PRODUCTS,
+        payload: updateCart,
+      });
+      localStorage.setItem("cart", JSON.stringify(updateCart));
     }
-    console.log(productList);
-    localStorage.setItem('cart', JSON.stringify(productList));
-    dispatch({
-      type: CART_ADD_PRODUCTS,
-      payload: productList,
-    });
   } else {
-    localStorage.setItem('cart', JSON.stringify(object));
     dispatch({
-      type: CART_ADD_PRODUCTS,
-      payload: object,
+      type: CART_PRODUCTS,
+      payload: updateCart,
     });
+    localStorage.setItem("cart", JSON.stringify(updateCart));
   }
-
 }

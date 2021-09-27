@@ -11,7 +11,7 @@ export default function Cart() {
   const cartSumPrice = useSelector(state => state.cart.sum);
 
   useEffect(() => {
-    if (JSON.parse(localStorage.getItem("cart")) !== null) {
+    if (localStorage.getItem("cart") !== null) {
       dispatch(cartProducts(JSON.parse(localStorage.getItem("cart"))));
     }
   }, [dispatch]);

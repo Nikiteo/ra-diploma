@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { NavLink, Link } from 'react-router-dom';
-import { cartLength } from '../../../actions/actionCreator';
+import { cartLength, cartProducts } from '../../../actions/actionCreator';
 import logo from '../../../img/header-logo.png';
 
 export default function Header() {
@@ -11,10 +11,16 @@ export default function Header() {
   const cartLengthStore = useSelector(state => state.cart.length);
 
   useEffect(() => {
+    if (localStorage.getItem("cart") !== null) {
+      dispatch(cartProducts(JSON.parse(localStorage.getItem("cart"))));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     if (cart) {
       dispatch(cartLength(cart.length));
     }
-  }, [cart, cartLengthStore, dispatch]);
+  }, [cart, dispatch]);
 
   return (
     <>

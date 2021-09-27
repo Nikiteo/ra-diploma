@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { cartAddProducts, cartProducts, fetchProduct } from '../../../actions/actionCreator';
+import { cartAddProducts, fetchProduct } from '../../../actions/actionCreator';
 import Alert from '../../other/Alert/Alert';
 import Loader from '../../other/Loader/Loader';
 import ProductQuantity from '../../other/ProductQuantity/ProductQuantity';
@@ -15,7 +15,6 @@ export default function ProductPage({ match }) {
   const alert = useSelector(state => state.product.alert);
   const size = useSelector(state => state.product.size);
   const quantity = useSelector(state => state.product.quantity);
-  const cart = useSelector(state => state.cart.cart);
   const [src, setSrc] = useState();
   const [sizes, setSizes] = useState();
   const [cartArray, setCartArray] = useState([]);
@@ -54,7 +53,7 @@ export default function ProductPage({ match }) {
     }
 
     let updateCart = [...cartArray, cartObject];
-    localStorage.setItem("cart", JSON.stringify(updateCart));
+    dispatch(cartAddProducts(cartArray, cartObject, updateCart));
     history.push("/cart");
   };
 

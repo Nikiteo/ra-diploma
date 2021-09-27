@@ -34,7 +34,6 @@ export const PRODUCT_HIDE_ALERT = 'PRODUCT/HIDE_ALERT';
 
 /** Cart */
 export const CART_PRODUCTS = 'CART/CART_PRODUCTS';
-export const CART_ADD_PRODUCTS = 'CART/CART_ADD_PRODUCTS';
 export const CART_LENGTH = 'CART/CART_LENGTH';
 export const CART_SUM = 'CART/CART_SUM';
 export const CART_SHOW_LOADER = 'CART/SHOW_LOADER';

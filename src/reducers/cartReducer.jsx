@@ -1,4 +1,4 @@
-import { CART_ADD_PRODUCTS, CART_LENGTH, CART_PRODUCTS, CART_SUM } from "../actions/actionTypes";
+import { CART_LENGTH, CART_PRODUCTS, CART_SUM } from "../actions/actionTypes";
 
 const initialState = {
   cart: [],
@@ -16,8 +16,6 @@ export const cartReducer = (state = initialState, action) => {
       return { ...state, length: action.payload }
     case CART_SUM:
       return { ...state, sum: action.payload }
-    case CART_ADD_PRODUCTS:
-      return { ...state, cart: action.payload }
     default: return state
   }
 }
