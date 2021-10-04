@@ -12,10 +12,15 @@ export default function Product() {
   const loadMoreBtn = useSelector(state => state.products.loadMore);
   const loading = useSelector(state => state.products.loading);
   const alert = useSelector(state => state.products.alert);
+  const search = useSelector(state => state.search);
 
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, [dispatch]);
+    if (search.search) {
+      dispatch(fetchProducts(search.search));
+    } else {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, search.search]);
 
   if (alert) return <Alert text={alert} vision={'danger'} />
   if (loading) return <Loader />

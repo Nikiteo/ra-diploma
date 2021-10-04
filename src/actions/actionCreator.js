@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  CART_DELETE,
   CART_LENGTH,
   CART_PRODUCTS,
   CART_SUM,
@@ -25,7 +26,10 @@ import {
   PRODUCT_SHOW_LOADER,
   PRODUCT_SIZE,
   PRODUCT_SIZE_DELETED,
+  SEARCH_FIELD_CHANGE,
+  SEARCH_TEXT_STATUS,
 } from './actionTypes';
+import { createOrder } from './orderRequest';
 
 /** Constants */
 const HITS_URL = process.env.REACT_APP_HITS_URL;
@@ -78,24 +82,44 @@ export const fetchCategories = () => async dispatch => {
 }
 
 /** Products */
-export const fetchProducts = () => async dispatch => {
-  dispatch({
-    type: PRODUCTS_SHOW_LOADER
-  });
-  await axios.get(`${PRODUCTS_URL}`)
-    .then((res) => {
-      dispatch({
-        type: PRODUCTS_FETCH_SUCCESS,
-        payload: res.data,
-      });
-      dispatch({
-        type: PRODUCTS_HIDE_LOADER
-      });
-    })
-    .catch((e) => dispatch({
-      type: PRODUCTS_SHOW_ALERT,
-      payload: `Произошла ошибка! Попробуйте обновить страницу ${e}`,
-    }));
+export const fetchProducts = (searchText) => async dispatch => {
+  if (searchText) {
+    dispatch({
+      type: PRODUCTS_SHOW_LOADER
+    });
+    await axios.get(`${PRODUCTS_URL}?q=${searchText}`)
+      .then((res) => {
+        dispatch({
+          type: PRODUCTS_FETCH_SUCCESS,
+          payload: res.data,
+        });
+        dispatch({
+          type: PRODUCTS_HIDE_LOADER
+        });
+      })
+      .catch((e) => dispatch({
+        type: PRODUCTS_SHOW_ALERT,
+        payload: `Произошла ошибка! Попробуйте обновить страницу ${e}`,
+      }));
+  } else {
+    dispatch({
+      type: PRODUCTS_SHOW_LOADER
+    });
+    await axios.get(`${PRODUCTS_URL}`)
+      .then((res) => {
+        dispatch({
+          type: PRODUCTS_FETCH_SUCCESS,
+          payload: res.data,
+        });
+        dispatch({
+          type: PRODUCTS_HIDE_LOADER
+        });
+      })
+      .catch((e) => dispatch({
+        type: PRODUCTS_SHOW_ALERT,
+        payload: `Произошла ошибка! Попробуйте обновить страницу ${e}`,
+      }));
+  }
 }
 
 export const setCategory = (id) => async dispatch => {
@@ -219,11 +243,9 @@ export const cartLength = (length) => async dispatch => {
 
 export const cartSum = (cart) => async dispatch => {
   let sumPrice = 0;
-  if (cart.length > 1) {
+  if (cart.length) {
     cart.forEach((item) => (
       sumPrice = Number(sumPrice) + (+item.prices * +item.quanities)));
-  } else {
-    sumPrice = Number(cart.prices) * Number(cart.quanities);
   }
   dispatch({
     type: CART_SUM,
@@ -260,3 +282,52 @@ export const cartAddProducts = (cart, object, updateCart) => async dispatch => {
     localStorage.setItem("cart", JSON.stringify(updateCart));
   }
 }
+
+export const cartDeleteProducts = (id) => async dispatch => {
+  dispatch({
+    type: CART_DELETE,
+    payload: id,
+  })
+}
+
+/** Search */
+
+export const searchFieldChange = (name, value) => async dispatch => {
+  dispatch({
+    type: SEARCH_FIELD_CHANGE,
+    payload: {
+      field: name,
+      value
+    }
+  });
+};
+
+export const searchTextStatus = (searchText, status) => async dispatch => {
+  dispatch({
+    type: SEARCH_TEXT_STATUS,
+    payload: {
+      search: searchText,
+      searchStatus: status
+    }
+  });
+};
+
+export const orderInit = () => ({ type: 'ORDER_INIT' });
+export const orderRequestStarted = () => ({ type: 'ORDER_REQUEST' });
+export const orderRequestSuccess = () => ({ type: 'ORDER_REQUEST_SUCCESS' });
+export const orderRequestFailure = (errorText) => ({ type: 'ORDER_REQUEST_FAILURE', payload: { errorText } });
+export const orderPhone = (id, value) => ({ type: 'ORDER_PHONE', payload: { [id]: value } });
+export const orderAddress = (id, value) => ({ type: 'ORDER_ADDRESS', payload: { [id]: value } });
+export const orderAgreement = (id, status) => ({ type: 'ORDER_AGREEMENT', payload: { [id]: status } });
+
+export const orderRequest = (phone, address, cartData) => async (dispatch) => {
+  dispatch(orderRequestStarted());
+  try {
+    await createOrder(phone, address, cartData);
+    dispatch(orderRequestSuccess());
+    dispatch({type: 'CART_LOCALSTORAGE_CLEAR'});
+  } catch (e) {
+    const detailedError = JSON.parse(e.message);
+    dispatch(orderRequestFailure(detailedError.text));
+  }
+};

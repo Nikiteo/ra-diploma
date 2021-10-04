@@ -3,7 +3,7 @@ import NumberFormat from 'react-number-format';
 import { nanoid } from 'nanoid';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { cartProducts, cartSum } from '../../../actions/actionCreator';
+import { cartDeleteProducts, cartProducts, cartSum } from '../../../actions/actionCreator';
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -21,6 +21,10 @@ export default function Cart() {
       dispatch(cartSum(cart));
     }
   }, [cart, dispatch]);
+
+  const handlerDelete = (id) => {
+    dispatch(cartDeleteProducts(id));
+  };
 
   return (
     <>
@@ -50,7 +54,14 @@ export default function Cart() {
               <td>
                 <NumberFormat value={item.prices * item.quanities} displayType={'text'} thousandSeparator={true} suffix={'₽'} />
               </td>
-              <td><button className="btn btn-outline-danger btn-sm">Удалить</button></td>
+              <td>
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => handlerDelete(item.id)}
+                >
+                  Удалить
+                </button>
+              </td>
             </tr>
           )) : (
             <tr>
